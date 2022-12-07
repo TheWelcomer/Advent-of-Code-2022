@@ -1,16 +1,12 @@
-import os
-file = open("info", "w")
-file.write("What's up?")
-file.close()
 with open("data.txt") as data:
 
     firstCalories = 0
     secondCalories = 0
     thirdCalories = 0
     currentCalories = 0
-    for line in data.readline():
-        if line != "":
-            currentCalories += line
+    for line in data.readlines():
+        if line != "\n":
+            currentCalories += int(line)
         else:
             if currentCalories > firstCalories:
                 thirdCalories = secondCalories
@@ -22,3 +18,5 @@ with open("data.txt") as data:
             elif currentCalories > thirdCalories:
                 thirdCalories = currentCalories
             currentCalories = 0
+
+print(firstCalories + secondCalories + thirdCalories)
