@@ -53,19 +53,29 @@ valDict = {
     'Z': 52,
 }
 with open("items.txt") as items:
-    commonItems = []
+    badges = []
+    firstElf = ''
+    secondElf = ''
+    thirdElf = ''
+    groupingNum = 1
     for line in items.readlines():
         line = line.replace('\n', '')
-        common = ''
-        comp1 = line[:len(line) // 2]
-        comp2 = line[len(line) // 2:]
-        for letter in comp1:
-            if letter in comp2:
-                common = letter
-                break
-        print(common)
-        commonItems.append(common)
+        if groupingNum % 3 == 1:
+            firstElf = line
+        if groupingNum % 3 == 2:
+            secondElf = line
+        if groupingNum % 3 == 0:
+            thirdElf = line
+            for letter in firstElf:
+                if letter in secondElf and letter in thirdElf:
+                    common = letter
+                    break
+            firstElf = ''
+            secondElf = ''
+            thirdElf = ''
+            badges.append(common)
+        groupingNum += 1
 value = 0
-for item in commonItems:
+for item in badges:
     value += valDict.get(item)
 print(value)
