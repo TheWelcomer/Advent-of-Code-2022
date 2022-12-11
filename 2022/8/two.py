@@ -10,36 +10,40 @@ with open("data.txt") as data:
         for col in range(len(array[0])):
             height = array[row][col]
             sightMult = []
+            
             numVisible = 0
-
             for i in range(col):
-                if array[row][i] < height:
+                if array[row][col - 1 - i] < height:
                     numVisible += 1
                 else:
+                    numVisible += 1
                     break
             sightMult.append(numVisible)
+            
             numVisible = 0
-
             for i in range(len(array[0]) - 1 - col):
-                if array[row][i] < height:
+                if array[row][col + 1 + i] < height:
                     numVisible += 1
                 else:
+                    numVisible += 1
                     break
             sightMult.append(numVisible)
+            
             numVisible = 0
-
             for i in range(row):
-                if array[i][col] < height:
+                if array[row - 1 - i][col] < height:
                     numVisible += 1
                 else:
+                    numVisible += 1
                     break
             sightMult.append(numVisible)
+            
             numVisible = 0
-
             for i in range(len(array) - 1 - row):
-                if array[i][col] < height:
+                if array[row + 1 + i][col] < height:
                     numVisible += 1
                 else:
+                    numVisible += 1
                     break
             sightMult.append(numVisible)
             
