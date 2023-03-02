@@ -1,34 +1,54 @@
-one = ['n', 'c', 'r', 't', 'm', 'z', 'p']
-two = ['d', 'n', 't', 's', 'b', 'z']
-three = ['m', 'h', 'q', 'r', 'f', 'c', 't', 'g']
-four = ['g', 'r', 'z']
-five = ['z', 'n', 'r', 'h']
-six = ['f', 'h', 's', 'w', 'p', 'z', 'l', 'd']
-seven = ['w', 'd', 'z', 'r', 'c', 'g', 'm']
-eight = ['s', 'j', 'f', 'l', 'h', 'w', 'z', 'q']
-nine = ['s', 'q', 'p', 'w', 'n']
+import re
 
-craneMappings = {
-    1: one,
-    2: two,
-    3: three,
-    4: four,
-    5: five,
-    6: six,
-    7: seven,
-    8: eight,
-    9: nine
-}
+valids = []
+ligmaValids = []
 
-with open("craneInstructions.txt") as instructions:
-    for line in instructions.readlines():
-        line = line.strip("\n")
-        words = line.split(" ")
-        numMoved = int(words[1])
-        moveFrom = int(words[3])
-        moveTo = int(words[5])
-        for i in range(numMoved):
-            movedCrate = craneMappings.get(moveFrom).pop()
-            craneMappings.get(moveTo).append(movedCrate)
+with open("data.txt", "r") as f:
+    data = f.readlines()
+    count = 0
+    for word in data:
+        if re.search('(?:[aeiou].*){3}',word)==None:
+            continue
+        if re.search('(.)\\1',word)==None:
+            continue
+        if not re.search('(?:ab|cd|pq|xy)',word)==None:
+            continue
+        count += 1
+        valids.append(word)
+    print(count)
+    print(valids)
+
+with open("data.txt", "r") as f:
+    data = f.readlines()
+    naughty = ["ab", "cd", "pq", "xy"]
+    numNice = 0
+    for line in data:
+        naughtyCombo = False
+        appearTwice = False
+        numVowels = 0
+        for i in range(len(line)):
+            if i != len(line) - 1:
+                if line[i:i + 1] in ["ab", "cd", "pq", "xy"]:
+                    naughtyCombo = True
+                    break
+                if line[i + 1] == line[i]:
+                    appearTwice = True
+            if line[i] in ["a", "e", "i", "o", "u"]:
+                numVowels += 1
+        if (not naughtyCombo) and appearTwice and numVowels >= 3:
+            numNice += 1
+            if line in valids:
+                ligmaValids.append(line)
+    print(numNice)
+    for valid in valids:
+        if valid in ligmaValids:
+            ligmaValids.remove(valid)
+    print(ligmaValids)
+    """
+    B(b - 1 - c) - tc - k = 0
+    Bb - B - Bc - tc - k = 0
+    Bb - B - k = tc + Bc
+    Bb - B - k = c(t + B)
+    c = (Bb - B - k)/(t + B)
     
-    print(one[-1], two[-1], three[-1], four[-1], five[-1], six[-1], seven[-1], eight[-1], nine[-1])
+    """
