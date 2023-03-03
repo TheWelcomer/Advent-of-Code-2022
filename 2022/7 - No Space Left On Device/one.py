@@ -1,44 +1,53 @@
-def containsNumber(value):
-    for character in value:
-        if character.isdigit():
-            return True
-    return False
 
-def sum(value):
-    total = 0
-    for item in value:
-        if type(item) == int:
-                total += item
+with open("data.txt", "r") as f:
+    directoryMap = {}
+    filesizeMap = {}
+    filepathStack = []
+    data = f.readlines()
+    for line in data:
+        line = line.strip()
+        if "$ cd .." in line:
+            filepathStack.pop()
+        elif "$ cd /" in line:
+            filepathStack = ["/"]
+            if not str(filepathStack) in directoryMap:
+                directoryMap[str(filepathStack)] = [0 , []]
+        elif "$ cd" in line:
+            currentDir = line[5:]
+            filepathStack.append(currentDir)
+            if not str(filepathStack) in directoryMap:
+                directoryMap[str(filepathStack)] = [0 , []]
+        elif "$ ls" in line:
+            continue
+        elif "dir" in line:
+            directoryList = directoryMap.get(str(filepathStack))
+            filename = filepathStack[:]
+            filename.append(line[4:])
+            directoryList[1].append(str(filename))
+            directoryMap[str(filepathStack)] = directoryList
         else:
-            total += sum(dirSizes.get(item))
-    return total
-
-with open("rootDirectory.txt") as root:
-    dirStack = ['/']
-    dirSizes = {}
-    dirIntSizes = {}
-    for line in root.readlines():
-        line = line.strip("\n")
-        if line.startswith("$ cd .."):
-            dirStack.pop()
-        elif line.startswith("$ cd "): 
-            dirStack.append(line[5:])
-        elif line.startswith("$ ls"):
-            dirSizes.update({str(dirStack[-1]): []})
+            directoryList = directoryMap.get(str(filepathStack))
+            filesize = int(line.split(" ")[0])
+            directoryList[0] += filesize
+            directoryMap[str(filepathStack)] = directoryList    
+    dirsizeMap = {}
+    def dirsizeFinder(bigDirectory):
+        if directoryMap[bigDirectory][1] == []:
+            return directoryMap[bigDirectory][0]
         else:
-            if containsNumber(line):
-                dirSizes[dirStack[-1]].append(int(line[:line.index(" ")]))
-            else:
-                dirSizes[dirStack[-1]].append(line[4:])
-
-    for key, value in dirSizes.items():
-        total = sum(value)
-        dirIntSizes.update({key: total})
-
-    print(dirIntSizes)
-
-    smallStackSize = 0
-    for value in dirIntSizes.values():
-        if value <= 100000:
-            smallStackSize += value
-    print(smallStackSize)
+            bigDirsize = directoryMap[bigDirectory][0]
+            for littleDirectory in directoryMap[bigDirectory][1]:
+                if littleDirectory in dirsizeMap:
+                    bigDirsize += dirsizeMap[littleDirectory]
+                else:
+                    littleDirsize = dirsizeFinder(littleDirectory)
+                    dirsizeMap[littleDirectory] = littleDirsize
+                    bigDirsize += littleDirsize
+            dirsizeMap[bigDirectory] = bigDirsize
+            return bigDirsize
+    totalDirsize = 0
+    for directory in directoryMap.keys():
+        dirsize = dirsizeFinder(directory)
+        if dirsize <= 100000:
+            totalDirsize += dirsize
+    print(totalDirsize)
