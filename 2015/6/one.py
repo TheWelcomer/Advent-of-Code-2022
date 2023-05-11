@@ -1,35 +1,34 @@
 with open("data.txt", "r") as f:
     data = f.readlines()
+    grid = [[0 for i in range(1000)] for i in range(1000)]
     for line in data:
-        grid = [[0 for i in range(1000)] for i in range(1000)]
         startLine = line[0:8]
         line = line.strip()
+        activation = line.split(" ")
         line = line.replace(" through ", ",")
         line = line.replace("turn off ", "")
         line = line.replace("turn on ", "")
         line = line.replace("toggle ", "")
         fromToNums = line.split(",")
-        fromX = int(fromToNums[0])
-        fromY = int(fromToNums[1])
-        toX = int(fromToNums[2])
-        toY = int(fromToNums[3])
-        if "turn off" in startLine:
-            for y in range(fromY, toY + 1):
-                for x in range(fromX, toX + 1):
-                    grid[y][x] = 0
-        elif "turn on" in startLine:
-            for y in range(fromY, toY + 1):
-                for x in range(fromX, toX + 1):
-                    grid[y][x] = 1
-        elif "toggle" in startLine:
-            for y in range(fromY, toY + 1):
-                for x in range(fromX, toX + 1):
-                    if grid[y][x] == 0:
-                        grid[y][x] = 1
-                    else:
-                        grid[y][x] = 0
-        numLit = 0
-        for row in grid:
-            for light in row:
-                numLit += light
-    print(numLit)
+        fromX = int(min(int(fromToNums[0]), int(fromToNums[2])))
+        fromY = int(min(int(fromToNums[1]), int(fromToNums[3])))
+        toX = int(max(int(fromToNums[0]), int(fromToNums[2])))
+        toY = int(max(int(fromToNums[1]), int(fromToNums[3])))
+        if (activation[0] == "toggle"):
+            for yPos in range(fromY, toY + 1):
+                for xPos in range(fromX, toX + 1):
+                    grid[yPos][xPos] = 1 if grid[yPos][xPos] == 0 else 0
+        elif (activation[1] == "off"):
+            for yPos in range(fromY, toY + 1):
+                for xPos in range(fromX, toX + 1):
+                    grid[yPos][xPos] = 0
+        elif (activation[1] == "on"):
+            for yPos in range(fromY, toY + 1):
+                for xPos in range(fromX, toX + 1):
+                    grid[yPos][xPos] = 1
+    
+    count = 0
+    for y in grid:
+        for light in y:
+            count += light
+    print(count)
